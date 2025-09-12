@@ -1,0 +1,79 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: dilovan
+# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
+app: bonzai
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: bonzai
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: eu-north-1
+  # Uncomment to easily set up a custom domain. Read the docs for more details:
+  # https://www.serverless.com/framework/docs/providers/aws/guide/domains
+  # domain: api.example.com
+
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "dynamodb:PutItem"
+            - "dynamodb:Query"
+            - "dynamodb:GetItem"
+            - "dynamodb:Scan"
+            - "dynamodb:UpdateItem"
+            - "dynamodb:DeleteItem"
+          Resource:
+            - "arn:aws:dynamodb:eu-north-1:366403524307:table/bookings-table" 
+
+resources:
+  Resources:
+    bookingsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: bookings-table
+        AttributeDefinitions:
+          - AttributeName: bookingId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: bookingId
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
+
+build:
+  esbuild:
+    minify: true
+
+package:
+  individually: true
+
+functions:
+  createBooking:
+    handler: functions/create-booking.createBooking
+    events:
+      - httpApi:
+          path: /bookings
+          method: POST
+  
+  getBookings:
+    handler: functions/get-bookings.getBookings
+    events:
+      - httpApi:
+          path: /bookings
+          method: GET
+  
+  updateBooking:
+    handler: functions/update-booking.updateBooking
+    events:
+      - httpApi:
+          path: /bookings/{bookingId}
+          method: PUT
+  
+  deleteBooking:
+    handler: functions/delete-booking.deleteBooking
+    events:
+      - httpApi:
+          path: /bookings/{bookingId}
+          method: DELETE
