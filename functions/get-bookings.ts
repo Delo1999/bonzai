@@ -13,7 +13,15 @@ export const getBookings = async (
     });
 
     const response = await client.send(command);
-    const bookings = response.Items?.map((item) => unmarshall(item)) || [];
+    const bookings =
+      response.Items?.map((item) => {
+        const booking = unmarshall(item);
+        // Parse the rooms string back to an object
+        return {
+          ...booking,
+          rooms: JSON.parse(booking.rooms),
+        };
+      }) || [];
 
     return {
       statusCode: 200,
