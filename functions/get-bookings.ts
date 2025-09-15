@@ -16,7 +16,6 @@ export const handler = async (
     const bookings =
       response.Items?.map((item) => {
         const booking = unmarshall(item);
-        // Parse the rooms string back to an object
         return {
           ...booking,
           rooms: JSON.parse(booking.rooms),
