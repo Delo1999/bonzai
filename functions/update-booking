@@ -1,8 +1,4 @@
-import {
-  DynamoDBClient,
-  UpdateItemCommand,
-  GetItemCommand,
-} from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient, UpdateItemCommand } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import { Room } from "../types/room-and-booking-types";
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from "aws-lambda";
@@ -32,7 +28,7 @@ export const updateBooking = async (
   try {
     const bookingId = event.pathParameters?.bookingId;
     const body = JSON.parse(event.body || "{}");
-    const { guests: numberOfGuests, rooms } = body;
+    const { guestName, guests: numberOfGuests, rooms } = body;
 
     if (!bookingId) {
       return {
@@ -40,6 +36,26 @@ export const updateBooking = async (
         body: JSON.stringify({
           success: false,
           message: "Booking ID is required",
+        }),
+      };
+    }
+
+    if (!Array.isArray(guestName)) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          success: false,
+          message: "Guest names must be provided as an array",
+        }),
+      };
+    }
+
+    if (guestName.length !== numberOfGuests) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          success: false,
+          message: "Number of guest names must match number of guests",
         }),
       };
     }
@@ -57,10 +73,12 @@ export const updateBooking = async (
     const updateCommand = new UpdateItemCommand({
       TableName: "bookings-table",
       Key: marshall({ bookingId }),
-      UpdateExpression: "SET guests = :guests, rooms = :rooms",
+      UpdateExpression:
+        "SET guests = :guests, rooms = :rooms, guestName = :guestName",
       ExpressionAttributeValues: marshall({
         ":guests": numberOfGuests,
         ":rooms": rooms,
+        ":guestName": guestName,
       }),
       ReturnValues: "ALL_NEW",
     });

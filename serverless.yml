@@ -16,7 +16,7 @@ provider:
   iam:
     role:
       statements:
-        - Effect: "Allow"
+        - Effect: Allow
           Action:
             - "dynamodb:PutItem"
             - "dynamodb:Query"
@@ -25,8 +25,7 @@ provider:
             - "dynamodb:UpdateItem"
             - "dynamodb:DeleteItem"
           Resource:
-            - "arn:aws:dynamodb:eu-north-1:366403524307:table/bookings-table" 
-
+            Fn::GetAtt: [bookings-table, Arn] 
 resources:
   Resources:
     bookingsTable:
