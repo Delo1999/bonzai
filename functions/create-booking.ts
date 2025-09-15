@@ -18,7 +18,6 @@ export const handler = async (
     const body = JSON.parse(event.body || "{}");
     const { guestName, numberOfGuests, rooms } = body;
 
-    // Validate input
     if (!guestName || !numberOfGuests || !rooms) {
       return {
         statusCode: 400,
@@ -26,7 +25,6 @@ export const handler = async (
       };
     }
 
-    // Validate room capacity
     const totalCapacity = rooms.reduce((acc: number, room: Room) => {
       switch (room.type) {
         case RoomType.SINGLE:
@@ -49,7 +47,6 @@ export const handler = async (
       };
     }
 
-    // Calculate total price
     const totalPrice = rooms.reduce((acc: number, room: Room) => {
       return acc + ROOM_PRICES[room.type] * room.quantity;
     }, 0);
@@ -65,7 +62,7 @@ export const handler = async (
 
     await dynamodb.send(
       new PutItemCommand({
-        TableName: "hotel-bookings",
+        TableName: "bookings-table",
         Item: {
           bookingId: { S: booking.bookingId },
           guestName: { S: booking.guestName },
