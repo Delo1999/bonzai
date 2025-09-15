@@ -25,7 +25,7 @@ provider:
             - "dynamodb:UpdateItem"
             - "dynamodb:DeleteItem"
           Resource:
-            Fn::GetAtt: [bookings-table, Arn] 
+            Fn::GetAtt: [bookingsTable, Arn] 
 resources:
   Resources:
     bookingsTable:
