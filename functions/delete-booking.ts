@@ -4,7 +4,7 @@ import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from "aws-lambda";
 
 const client = new DynamoDBClient({ region: "eu-north-1" });
 
-export const deleteBooking = async (
+export const handler = async (
   event: APIGatewayProxyEventV2
 ): Promise<APIGatewayProxyResultV2> => {
   try {

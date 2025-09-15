@@ -22,7 +22,7 @@ const validateBooking = (numberOfGuests: number, rooms: Room[]): boolean => {
   return numberOfGuests <= roomCapacity;
 };
 
-export const updateBooking = async (
+export const handler = async (
   event: APIGatewayProxyEventV2
 ): Promise<APIGatewayProxyResultV2> => {
   try {
