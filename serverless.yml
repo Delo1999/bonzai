@@ -76,6 +76,3 @@ functions:
       - httpApi:
           path: /bookings/{bookingId}
           method: DELETE
-
-plugins:
-  - serverless-esbuild
