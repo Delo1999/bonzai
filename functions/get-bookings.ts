@@ -4,7 +4,7 @@ import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from "aws-lambda";
 
 const client = new DynamoDBClient({ region: "eu-north-1" });
 
-export const handler = async (
+export const getBookings = async (
   event: APIGatewayProxyEventV2
 ): Promise<APIGatewayProxyResultV2> => {
   try {
@@ -16,6 +16,7 @@ export const handler = async (
     const bookings =
       response.Items?.map((item) => {
         const booking = unmarshall(item);
+        // Parse the rooms string back to an object
         return {
           ...booking,
           rooms: JSON.parse(booking.rooms),

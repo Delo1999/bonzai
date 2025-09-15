@@ -22,7 +22,7 @@ const validateBooking = (numberOfGuests: number, rooms: Room[]): boolean => {
   return numberOfGuests <= roomCapacity;
 };
 
-export const handler = async (
+export const updateBooking = async (
   event: APIGatewayProxyEventV2
 ): Promise<APIGatewayProxyResultV2> => {
   try {
@@ -100,7 +100,6 @@ export const handler = async (
       body: JSON.stringify({
         success: false,
         message: "Error updating booking",
-        error: error instanceof Error ? error.message : "Unknown error",
       }),
     };
   }

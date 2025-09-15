@@ -11,7 +11,7 @@ const ROOM_PRICES = {
   [RoomType.SUITE]: 1500,
 };
 
-export const handler = async (
+export const createBooking = async (
   event: APIGatewayProxyEventV2
 ): Promise<APIGatewayProxyResultV2> => {
   try {

@@ -79,6 +79,3 @@ functions:
 
 plugins:
   - serverless-esbuild
-
-devDependencies:
-  serverless-esbuild: ^6.5.0
