@@ -50,29 +50,35 @@ package:
 
 functions:
   createBooking:
-    handler: functions/create-booking.createBooking
+    handler: functions/create-booking.handler
     events:
       - httpApi:
           path: /bookings
           method: POST
   
   getBookings:
-    handler: functions/get-bookings.getBookings
+    handler: functions/get-bookings.handler
     events:
       - httpApi:
           path: /bookings
           method: GET
   
   updateBooking:
-    handler: functions/update-booking.updateBooking
+    handler: functions/update-booking.handler
     events:
       - httpApi:
           path: /bookings/{bookingId}
           method: PUT
   
   deleteBooking:
-    handler: functions/delete-booking.deleteBooking
+    handler: functions/delete-booking.handler
     events:
       - httpApi:
           path: /bookings/{bookingId}
           method: DELETE
+
+plugins:
+  - serverless-esbuild
+
+devDependencies:
+  serverless-esbuild: ^6.5.0
