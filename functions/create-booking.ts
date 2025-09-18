@@ -1,4 +1,8 @@
-import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
+import {
+  DynamoDBClient,
+  PutItemCommand,
+  ScanCommand,
+} from "@aws-sdk/client-dynamodb";
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from "aws-lambda";
 import { v4 as uuidv4 } from "uuid";
 import { Booking, Room, RoomType } from "../types/room-and-booking-types";
@@ -9,6 +13,30 @@ const ROOM_PRICES = {
   [RoomType.SINGLE]: 500,
   [RoomType.DOUBLE]: 1000,
   [RoomType.SUITE]: 1500,
+};
+
+const TOTAL_HOTEL_ROOMS = 20;
+
+const getTotalBookedRooms = async (): Promise<number> => {
+  const command = new ScanCommand({
+    TableName: "bookings-table",
+  });
+
+  const response = await dynamodb.send(command);
+  const bookings =
+    response.Items?.map((item) => ({
+      rooms: JSON.parse(item.rooms.S || "[]"),
+    })) || [];
+
+  return bookings.reduce(
+    (total, booking) =>
+      total +
+      booking.rooms.reduce(
+        (roomTotal: number, room: Room) => roomTotal + room.quantity,
+        0
+      ),
+    0
+  );
 };
 
 export const handler = async (
@@ -43,6 +71,23 @@ export const handler = async (
         statusCode: 400,
         body: JSON.stringify({
           error: "Room capacity does not match number of guests",
+        }),
+      };
+    }
+
+    const requestedRooms = rooms.reduce(
+      (total: number, room: Room) => total + room.quantity,
+      0
+    );
+    const currentlyBooked = await getTotalBookedRooms();
+
+    if (currentlyBooked + requestedRooms > TOTAL_HOTEL_ROOMS) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          error: `Cannot book ${requestedRooms} rooms. Only ${
+            TOTAL_HOTEL_ROOMS - currentlyBooked
+          } rooms available.`,
         }),
       };
     }
