@@ -18,7 +18,10 @@ export const handler = async (
         const booking = unmarshall(item);
         return {
           ...booking,
-          rooms: JSON.parse(booking.rooms),
+          rooms:
+            typeof booking.rooms === "string"
+              ? JSON.parse(booking.rooms)
+              : booking.room,
         };
       }) || [];
 
