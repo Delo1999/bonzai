@@ -19,6 +19,7 @@ export const handler = async (
         return {
           ...booking,
           rooms:
+            // Works now
             typeof booking.rooms === "string"
               ? JSON.parse(booking.rooms)
               : booking.room,
